@@ -1,0 +1,44 @@
+//Pseudo code
+STDMETHODIMP CPropertyStore::GetValue(REFPROPERTYKEY key, PROPVARIANT *pv) //IPropertyStore
+{
+// .......
+	//System.ThumbnailCacheId -- PKEY_ThumbnailCacheId
+	//446D16B1-8DAD-4870-A748-402EA43D788C}, 100
+	if (key == PKEY_ThumbnailCacheId) {
+		LPWSTR pPath = CNSEData::GetPath(m_pidl);
+		FILETIME lastModified = CNSEData::GetLastModified(m_pidl);
+		//example : 0 -> custom icon overlay disabled (not showed)
+		//		  : 1 -> custom icon overlay type 1 
+		//        : 2 -> custom icon overlay type 2
+		//cache id is different by overlay icon status
+		DWORD overlayIconStatus = CNSEData::GetOverlayStatus(m_pidl);
+		pv->vt = VT_UI8;
+		pv->uhVal = _CalcCacheId(pPath,&lastModified,overlayIconStatus);
+		
+		hr = S_OK;
+	}
+// ......
+}
+
+ULONGLONG CPropertyStore::_CalcCacheId(LPWSTR pPath,PFILETIME pLastModified,DWORD overlayStatus){
+	ULONGLONG id = 185684268; //unique own basic id
+	DWORD pathLen = 0;
+	if(pPath){
+		pathLen = (DWORD)wcslen(pPath);
+		
+		for(DWORD i=0;i<pathLen;i++){
+			id += (DWORD)pPath[i];
+		}
+	}
+
+	if(pLastModified){
+		id += pLastModified->dwLowDateTime;
+		id += (pLastModified->dwHighDateTime << 32);
+	}
+	
+	id += overlayStatus;
+	
+	return id;
+}
+
+
