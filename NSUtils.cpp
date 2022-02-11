@@ -78,6 +78,7 @@ BOOL NSUtils::DrawOverlayAtIcon(HICON originalIcon, HICON overlayIcon, LPCWSTR o
 				XTrace(L"LoadImageW err %ls %d", overlayPath, GetLastError());
 				goto escapeArea;
 			}
+			freeOverlayIcon = TRUE;
 		}
 		else {
 			XTrace(L"Invalid Parameter");
@@ -167,6 +168,7 @@ BOOL NSUtils::DrawOverlayAtBitmap(HBITMAP originalImage, HICON overlayIcon, LPCW
 				XTrace(L"LoadImageW err %ls %d", overlayPath, GetLastError());
 				goto escapeArea;
 			}
+			freeOverlayIcon = TRUE;
 		}
 		else {
 			XTrace(L"Invalid Parameter");
